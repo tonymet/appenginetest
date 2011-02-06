@@ -1,0 +1,12 @@
+application: appenginetest
+version: 1
+runtime: python
+api_version: 1
+#log_level: DEBUG
+
+includes:
+- conf/env.yaml
+    
+handlers:
+- url: .*
+  script: main.py
