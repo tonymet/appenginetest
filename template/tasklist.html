@@ -1,0 +1,22 @@
+<html>
+  <body>
+	<table>
+	<tr><th>Name</th><th>Status</th><th>Email</th></tr>
+		{% for task in tasks %}
+	<tr>
+	  <td><a href="/task/{{task.key}}">{{ task.name  }}</a></td>
+	  <td>{{ task.status  }} </td>
+	  <td>{{ task.owner  }} </td>
+	</tr>
+    {% endfor %}
+	</table>
+    <form action="/task" method="post">
+	<ul>
+		{{ form.as_ul }}
+	</ul>
+	<input type="submit">
+    </form>
+    <a href="{{ url }}">{{ url_linktext }}</a>
+  </body>
+</html>
+

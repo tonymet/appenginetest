@@ -5,18 +5,22 @@ from model.TaskModel import *
 from form.taskform import TaskForm
 
 
-class MainHandler(webapp.RequestHandler):
+class BaseHandler(webapp.RequestHandler):
+	def render(self, name, **template_data):
+		self.response.out.write(template.render('template/%s.html' % name, template_data))
+
+class MainHandler(BaseHandler):
 	def get(self):
 		logging.debug("received a %s response" % self.__class__)
 		ts = TaskModel.all()
 
-class TaskListHandler(webapp.RequestHandler):
+class TaskListHandler(BaseHandler):
 	def get(self):
 		ts = TaskModel.all()
 		logging.debug("received a %s response" % self.__class__)
 		tf = TaskForm()
 		from google.appengine.api import users
-		self.response.out.write(template.render('template/task.html', {'tasks': ts, 'form': tf.as_ul()}))
+		self.render('tasklist', tasks = ts, form =  tf)
 
 	def post(self):
 		tf = TaskForm(self.request.params)
@@ -24,9 +28,11 @@ class TaskListHandler(webapp.RequestHandler):
 		t.put()
 		self.redirect('/task');
 
-class TaskHandler(webapp.RequestHandler):
-	def get(self, groups):
-		print groups
+class TaskHandler(BaseHandler):
+	def get(self, key):
+		task = TaskModel.get(key)
+		tf = TaskForm()
+		self.render('task', task = task, form = tf)
 		
 
 class CommentHandler(webapp.RequestHandler):

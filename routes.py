@@ -3,8 +3,8 @@ from handler.TaskHandler import *
 class Routes:
 	def __init__(self):
 		self.routes =[
-				('/', MainHandler), 
+				('/', TaskListHandler), 
 				('/task', TaskListHandler), 
-				(r'/task/(\d+)', TaskHandler), 
+				(r'/task/([a-zA-Z0-9]+)', TaskHandler), 
 				('/comment', CommentHandler)
 		]

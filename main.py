@@ -17,7 +17,6 @@ from google.appengine.ext import webapp
 from google.appengine.ext.webapp import util
 from model.TaskModel import *
 import logging
-from handler.TaskHandler import *
 from routes import Routes
 
 
