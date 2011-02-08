@@ -13,14 +13,10 @@
 </table>
 
     <form action="/task" method="post">
-		<h2>Add a Task</h2>
-		<label for="name">Name:</label>
-			<input type="text" name="name">
-		<label for="name">Status:</label>
-			<input type="text" name="status">
-		<label for="name">Email:</label>
-			<input type="text" name="owner">
-			<input type="submit">
+	<ul>
+		{{ form }}
+	</ul>
+	<input type="submit">
     </form>
 
     <a href="{{ url }}">{{ url_linktext }}</a>

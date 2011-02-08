@@ -18,25 +18,13 @@ from google.appengine.ext.webapp import util
 from model.TaskModel import *
 import logging
 from handler.TaskHandler import *
+from routes import Routes
 
-
-class MainHandler(webapp.RequestHandler):
-	def get(self):
-		logging.debug("received a %s response" % self.__class__)
-		ts = TaskModel.TaskModel.all()
-
-class Routes:
-	def __init__(self):
-		self.routes =[
-				('/', MainHandler), 
-				('/task', TaskHandler), 
-				('/comment', CommentHandler)
-		]
 
 def main():
 	logging.getLogger().setLevel(logging.DEBUG)
-	routes = Routes()
-	application = webapp.WSGIApplication(routes.routes,
+	r = Routes()
+	application = webapp.WSGIApplication(r.routes,
 										 debug=True)
 	util.run_wsgi_app(application)
 
