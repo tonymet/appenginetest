@@ -20,7 +20,7 @@ class TaskListHandler(BaseHandler):
 		logging.debug("received a %s response" % self.__class__)
 		tf = TaskForm()
 		from google.appengine.api import users
-		self.render('tasklist', tasks = ts, form =  tf)
+		self.render('tasklist', tasks = ts, form =  tf, request=self.request)
 
 	def post(self):
 		tf = TaskForm(self.request.params)
@@ -30,12 +30,21 @@ class TaskListHandler(BaseHandler):
 
 class TaskHandler(BaseHandler):
 	def get(self, key):
-		task = TaskModel.get(key)
 		tf = TaskForm()
 		self.render('task', task = task, form = tf)
 		
 
-class CommentHandler(webapp.RequestHandler):
-	def get(self):
-		logging.debug("received a %s response" % self.__class__)
-		print "hello commenter"
+class CommentHandler(BaseHandler):
+	def get(self, key):
+		try:
+			task = TaskModel.get(key)
+		except db.BadKeyError:
+			self.error(404)
+			return
+		self.render('commentlist', task = task, comments=task.comments, request = self.request)
+	
+	def post(self, key):
+		task = TaskModel.get(self.request.get('task_key'))
+		comment = CommentModel(task=task, content = self.request.get('content'))
+		comment.put()
+		self.redirect(self.request.url)

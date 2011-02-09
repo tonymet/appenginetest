@@ -1,16 +1,15 @@
-<html>
-  <body>
+{% include "header.html" %}
 	<table>
-	<tr><th>Name</th><th>Status</th><th>Email</th></tr>
+		<tr><th>Name</th><th>Status</th><th>Email</th></tr>
 		{% for task in tasks %}
 	<tr>
 	  <td><a href="/task/{{task.key}}">{{ task.name  }}</a></td>
-	  <td>{{ task.status  }} </td>
+	  <td>{{ task.status_message  }} </td>
 	  <td>{{ task.owner  }} </td>
 	</tr>
     {% endfor %}
 	</table>
-    <form action="/task" method="post">
+	<form action="{{request.path}}" method="post">
 	<ul>
 		{{ form.as_ul }}
 	</ul>
@@ -19,4 +18,3 @@
     <a href="{{ url }}">{{ url_linktext }}</a>
   </body>
 </html>
-
