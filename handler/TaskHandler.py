@@ -3,6 +3,7 @@ from google.appengine.ext.webapp import template
 import logging
 from model.TaskModel import *
 from form.taskform import TaskForm
+from form.borrowedform import BorrowedForm
 
 
 class BaseHandler(webapp.RequestHandler):
@@ -48,3 +49,27 @@ class CommentHandler(BaseHandler):
 		comment = CommentModel(task=task, content = self.request.get('content'))
 		comment.put()
 		self.redirect(self.request.url)
+	
+class BorrowedListHandler(BaseHandler):
+	def get(self):
+		try:
+			borrowed_items = BorrowedModel.all()
+			form = BorrowedForm()
+		except db.BadKeyError:
+			self.error(404)
+			return
+		self.render('borrowedlist', borrowed_items = borrowed_items, request = self.request, form=form)
+	
+	def post(self):
+		try:
+			bf = BorrowedForm(self.request.params)
+			borrowed = bf.save()
+			borrowed.put()
+			self.redirect(self.request.path)
+		except:
+			pass
+
+
+
+
+

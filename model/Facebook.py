@@ -71,5 +71,3 @@ class Facebook(object):
 	@staticmethod
 	def base64_url_encode(data):
 		return base64.urlsafe_b64encode(data).rstrip('=')
-
-

@@ -1,0 +1,22 @@
+{% include "header.html" %}
+<h1>Borrowed Items</h1>
+	<table>
+	<tr><th>Name</th><th>Status</th><th>Borrower</th>Lender</tr>
+	{% for borrowed in borrowed_items %}
+	<tr>
+		<td><a href="{{request.path}}/{{borrowed.key}}">{{ borrowed.name  }}</a></td>
+		<td>{{ borrowed.status_message	}} </td>
+		<td>{{ borrowed.borrower  }} </td>
+		<td>{{ borrowed.lender	}} </td>
+	</tr>
+	{% endfor %}
+	</table>
+	<form action="{{request.path}}" method="post">
+	<ul>
+		{{ form.as_ul }}
+	</ul>
+	<input type="submit">
+	</form>
+	<a href="{{ url }}">{{ url_linktext }}</a>
+  </body>
+</html>

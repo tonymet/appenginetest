@@ -30,7 +30,7 @@ class CommentModel(db.Model):
 	created = db.DateTimeProperty(auto_now_add = True)
 	content = db.StringProperty(required=True)
 
-class User(db.Model):
+class UserModel(db.Model):
 	user_id = db.StringProperty(required=True)
 	access_token = db.StringProperty(required=True)
 	name = db.StringProperty(required=True)
@@ -49,3 +49,24 @@ class User(db.Model):
 		self.picture = me[u'picture']
 		self.friends = [user[u'id'] for user in me[u'friends'][u'data']]
 		return self.put()
+
+
+class BorrowedModel(db.Model):
+	STATUS_BORROWED=0x0
+	STATUS_RETURNED=0x01
+
+	borrower = db.StringProperty(required = True)
+	lender = db.StringProperty(required = True)
+	title = db.StringProperty(required = True)
+	when = db.DateTimeProperty()
+	picture = db.StringProperty()
+	due = db.DateTimeProperty()
+	status = db.IntegerProperty(default = STATUS_BORROWED, choices=set([STATUS_BORROWED, STATUS_RETURNED]) )
+
+	@property
+	def status_message(self):
+		if(self.status == self.STATUS_BORROWED):
+			return "Borrowed"
+		elif(self.status == self.STATUS_RETURNED):
+			return "Returned"
+		return None

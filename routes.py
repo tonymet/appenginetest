@@ -6,4 +6,5 @@ class Routes:
 				('/', TaskListHandler), 
 				('/task', TaskListHandler), 
 				(r'/task/([a-zA-Z0-9]+)', CommentHandler), 
+				(r'/borrowed', BorrowedListHandler), 
 		]
