@@ -23,8 +23,3 @@ Borrowed.prototype.friendsList = function(id){
 		});
 	});
 }
-
-window.addEventListener('load', function(){
-		b = new Borrowed();
-		b.friendsList('choices_select');
-	}, false);

@@ -16,7 +16,16 @@
 	<ul>
 		{{ form.as_ul }}
 	</ul>
+	<select name="borrower" id="choices_select">
+	<input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
 	<input type="submit">
+	</select>
+	<script>
+	$(document).ready(function(){
+			b = new Borrowed();
+			b.friendsList('choices_select');
+		});
+	</script>
 	</form>
 	<a href="{{ url }}">{{ url_linktext }}</a>
   </body>
