@@ -1,3 +1,57 @@
 <html>
-<body>
+	<body>
 	<p><a href="/">Home</a></p>
+	<div id="fb-root"></div>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js"></script>
+	<script src="http://connect.facebook.net/en_US/all.js"></script>
+	<script>
+	  FB.init({
+		appId  : '193293140699596',
+		status : true, // check login status
+		cookie : true, // enable cookies to allow the server to access the session
+		xfbml  : true  // parse XFBML
+	  });
+	</script>
+	<select id="choices_select">
+	</select>
+
+	<div id="profile_pics"></div>
+	<script>
+	var profilePicsDiv = document.getElementById('profile_pics');
+	FB.getLoginStatus(function(response) {
+	  if (!response.session) {
+		profilePicsDiv.innerHTML = '<em>You are not connected</em>';
+		return;
+	  }
+
+	  FB.api({ method: 'friends.get' }, function(result) {
+		/*Log.info('friends.get response', result);*/
+		var markup = '';
+		var numFriends = result ? Math.min(5, result.length) : 0;
+		if (numFriends > 0) {
+		  for (var i=0; i<numFriends; i++) {
+			markup += (
+			  '<fb:profile-pic size="square" ' +
+							  'uid="' + result[i] + '" ' +
+							  'facebook-logo="true"' +
+			  '></fb:profile-pic>'
+			);
+		  }
+		}
+		profilePicsDiv.innerHTML = markup;
+		FB.XFBML.parse(profilePicsDiv);
+	  });
+	});
+	</script>
+	<script src="/js/borrowed.js"></script>
+<h1>Square for loggedinuser</h1>
+<fb:profile-pic uid="loggedinuser" size="square" facebook-logo="true"></fb:profile-pic>
+
+<h1>Normal for given UID</h1>
+<fb:profile-pic uid="5526183" size="normal" facebook-logo="true"></fb:profile-pic>
+
+<h1>Small for loggedinuser</h1>
+<fb:profile-pic uid="loggedinuser" size="small" facebook-logo="true"></fb:profile-pic>
+
+<h1>Thumb for loggedinuser without logo</h1>
+<fb:profile-pic uid="loggedinuser" size="thumb"></fb:profile-pic>

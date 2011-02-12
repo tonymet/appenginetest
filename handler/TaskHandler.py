@@ -4,11 +4,8 @@ import logging
 from model.TaskModel import *
 from form.taskform import TaskForm
 from form.borrowedform import BorrowedForm
+from handler.BaseHandler import BaseHandler
 
-
-class BaseHandler(webapp.RequestHandler):
-	def render(self, name, **template_data):
-		self.response.out.write(template.render('template/%s.html' % name, template_data))
 
 class MainHandler(BaseHandler):
 	def get(self):

@@ -1,5 +1,11 @@
+import base64
+import hmac
+import hashlib
+import time
 from django.utils import simplejson as json
 from conf import facebook_conf
+from google.appengine.api import urlfetch
+import urllib
 
 class FacebookApiError(Exception):
 	def __init__(self, result):
