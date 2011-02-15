@@ -7,23 +7,26 @@
 		<!-- <td><a href="{{request.path}}/{{borrowed.key}}">{{ borrowed.title}}</a></td> -->
 		<td>{{ borrowed.title}}</td>
 		<td>{{ borrowed.status_message	}} </td>
-		<td>{{ borrowed.borrower  }} </td>
-		<td>{{ borrowed.lender	}} </td>
+		<td>{{ borrowed.borrower.name  }}<img src="{{borrowed.borrower.picture}}"> </td>
+		<td>{{ borrowed.lender.name  }}<img src="{{borrowed.lender.picture}}"> </td>
 	</tr>
 	{% endfor %}
 	</table>
 	<form action="{{request.path}}" method="post">
 	<ul>
-		{{ form.as_ul }}
+		<li><label for="title">Title</label><input name="title"></li>
+		<li><label for="Due">Due</label><input name="due"></li>
+		<li> <select name="borrower" id="borrower_select"></select> </li>
+		<li> <select name="lender" id="lender_select"></select></li>
 	</ul>
-	<select name="borrower" id="choices_select">
+
 	<input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
 	<input type="submit">
-	</select>
 	<script>
 	$(document).ready(function(){
 			b = new Borrowed();
-			b.friendsList('choices_select');
+			b.friendsList('borrower_select');
+			b.friendsList('lender_select');
 		});
 	</script>
 	</form>

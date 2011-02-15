@@ -1,5 +1,6 @@
 import datetime
 from google.appengine.ext import db
+from model.Facebook import Facebook
 
 class TaskModel(db.Model):
 	STATUS_IN_PROGRESS=0x01
@@ -32,12 +33,13 @@ class CommentModel(db.Model):
 
 class UserModel(db.Model):
 	user_id = db.StringProperty(required=True)
-	access_token = db.StringProperty(required=True)
+	access_token = db.StringProperty()
 	name = db.StringProperty(required=True)
 	picture = db.StringProperty(required=True)
 	email = db.StringProperty()
 	friends = db.StringListProperty()
 	dirty = db.BooleanProperty()
+
 
 	def refresh_data(self):
 		"""Refresh this user's data using the Facebook Graph API"""
@@ -50,15 +52,25 @@ class UserModel(db.Model):
 		self.friends = [user[u'id'] for user in me[u'friends'][u'data']]
 		return self.put()
 
+	@staticmethod
+	def from_facebook(facebook, id):
+		me = facebook.api(u'/%s' % id, {u'fields': u'picture'})
+		user = UserModel(key_name=me['id'],
+			user_id=me['id'],
+			name=me[u'name'],
+			email=me.get(u'email'),  # optional
+			picture=me[u'picture'],
+			)
+		return user
 
 class BorrowedModel(db.Model):
 	STATUS_BORROWED=0x0
 	STATUS_RETURNED=0x01
 
-	borrower = db.StringProperty(required = True)
-	lender = db.StringProperty(required = True)
+	borrower = db.ReferenceProperty(UserModel,required = True, collection_name="borrowed_items")
+	lender = db.ReferenceProperty(UserModel,required = True, collection_name="lent_items")
 	title = db.StringProperty(required = True)
-	when = db.DateTimeProperty()
+	when = db.DateTimeProperty(auto_now_add=True)
 	picture = db.StringProperty()
 	due = db.DateTimeProperty()
 	status = db.IntegerProperty(default = STATUS_BORROWED, choices=set([STATUS_BORROWED, STATUS_RETURNED]) )
@@ -70,3 +82,5 @@ class BorrowedModel(db.Model):
 		elif(self.status == self.STATUS_RETURNED):
 			return "Returned"
 		return None
+
+

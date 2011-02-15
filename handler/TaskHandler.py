@@ -2,6 +2,7 @@ from google.appengine.ext import webapp
 from google.appengine.ext.webapp import template
 import logging
 from model.TaskModel import *
+from model.Facebook import *
 from form.taskform import TaskForm
 from form.borrowedform import BorrowedForm
 from handler.BaseHandler import BaseHandler
@@ -58,15 +59,18 @@ class BorrowedListHandler(BaseHandler):
 		self.render('borrowedlist', borrowed_items = borrowed_items, request = self.request, form=form)
 	
 	def post(self):
-		try:
-			bf = BorrowedForm(self.request.params)
-			borrowed = bf.save()
-			borrowed.put()
-			self.redirect(self.request.path)
-		except:
-			pass
-
-
-
-
-
+		if not self.facebook:
+			raise Exception('facebook not initialized')
+		bf = BorrowedForm(self.request.params)
+		borrower = UserModel.get_by_key_name(self.request.params['borrower'])
+		logging.debug('borrower: %s' % self.request.params['borrower'])
+		if not borrower:
+			borrower = UserModel.from_facebook(self.facebook, self.request.params['borrower'])
+			borrower.put()
+		lender = UserModel.get_by_key_name(self.request.params['lender'])
+		if not lender:
+			lender = UserModel.from_facebook(self.facebook, self.request.params['lender'])
+			lender.put()
+		borrowed = BorrowedModel(borrower=borrower, lender=lender, title=self.request.params['title'])
+		borrowed.put()
+		self.redirect(self.request.path)
