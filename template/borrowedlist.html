@@ -15,9 +15,8 @@
 	<form action="{{request.path}}" method="post">
 	<ul>
 		<li><label for="title">Title</label><input name="title"></li>
-		<li><label for="Due">Due</label><input name="due"></li>
-		<li> <select name="borrower" id="borrower_select"></select> </li>
-		<li> <select name="lender" id="lender_select"></select></li>
+		<li><select name="verb"><option value="borrowed">Borrowed From</option><option value="lent">Lent To</option></select></li>
+		<li> <select name="friend" id="friend_select"></select> </li>
 	</ul>
 
 	<input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
@@ -25,8 +24,7 @@
 	<script>
 	$(document).ready(function(){
 			b = new Borrowed();
-			b.friendsList('borrower_select');
-			b.friendsList('lender_select');
+			b.friendsList('friend_select');
 		});
 	</script>
 	</form>
