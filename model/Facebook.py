@@ -6,10 +6,14 @@ from django.utils import simplejson as json
 from conf import facebook_conf
 from google.appengine.api import urlfetch
 import urllib
+import logging
+import pprint
 
 class FacebookApiError(Exception):
 	def __init__(self, result):
 		self.result = result
+	def __str__(self):
+		return pprint.pformat(self.result) 	
 
 
 class Facebook(object):
@@ -46,9 +50,24 @@ class Facebook(object):
 		sig = self.base64_url_decode(sig)
 		data = json.loads(self.base64_url_decode(payload))
 
-		expected_sig = hmac.new(
-			self.app_secret, msg=payload, digestmod=hashlib.sha256).digest()
+		logging.warn(data)
+		expected_sig = hmac.new( self.app_secret, msg=payload, digestmod=hashlib.sha256).digest()
 
+		data = json.loads(
+				self.api('/oauth/access_token', 
+					{
+						'client_id': facebook_conf.FACEBOOK_APP_ID,
+						'client_secret': facebook_conf.FACEBOOK_APP_SECRET,
+						'redirect_uri' : 'http://tonynet.homeip.net/',
+						'code' : data.get('code')
+					}
+				)
+		)
+		logging.warn(data);
+
+
+		if not data.get(u'oauth_token'):
+			raise Exception("missing oauth_token")
 		# allow the signed_request to function for upto 1 day
 		if sig == expected_sig and data[u'issued_at'] > (time.time() - 86400):
 			self.signed_request = data

@@ -3,7 +3,7 @@ import os
 from google.appengine.api import urlfetch
 from google.appengine.runtime import DeadlineExceededError
 from google.appengine.api.labs import taskqueue
-from model.Facebook import Facebook
+from model.Facebook import Facebook, FacebookApiError
 from google.appengine.ext.webapp import util, template
 from model.TaskModel import UserModel
 import datetime
@@ -21,6 +21,7 @@ class BaseHandler(webapp.RequestHandler):
     facebook = None
     user = None
     csrf_protect = True
+    csrf_token = None
 
     def initialize(self, request, response):
         """General initialization for every request"""
@@ -81,10 +82,10 @@ class BaseHandler(webapp.RequestHandler):
         data[u'csrf_token'] = self.csrf_token
         data[u'canvas_name'] = facebook_conf.FACEBOOK_CANVAS_NAME
         self.response.out.write( \
-			template.render( \
-				os.path.join( 'template', name + '.html'), 
-				data)
-		)
+            template.render( \
+                os.path.join( 'template', name + '.html'), 
+                data)
+        )
 
     def init_facebook(self):
         """Sets up the request specific Facebook and User instance"""
@@ -100,8 +101,17 @@ class BaseHandler(webapp.RequestHandler):
             self.request.method = u'GET'
             self.set_cookie(
                 'u', facebook.user_cookie, datetime.timedelta(minutes=1440))
-        elif 'u' in self.request.cookies:
-            facebook.load_signed_request(self.request.cookies.get('u'))
+        elif self.cookie_name() in self.request.cookies:
+            try:
+                facebook.load_signed_request(self.request.cookies.get(self.cookie_name()))
+            except Exception as e:
+                logging.error(str(e))
+
+            if facebook.signed_request is None:
+                raise Exception(u'ERROR: unable to parse signed request')
+        else:
+            #pass
+            raise Exception(u'no signed request cookie or POST var')
 
         # try to load or create a user object
         if facebook.user_id:
@@ -119,16 +129,25 @@ class BaseHandler(webapp.RequestHandler):
                 if not facebook.access_token:
                     facebook.access_token = user.access_token
 
-            if not user and facebook.access_token:
-                me = facebook.api(u'/me', {u'fields': u'picture,friends'})
-                user = UserModel(key_name=facebook.user_id,
-                    user_id=facebook.user_id,
-                    access_token=facebook.access_token,
-                    name=me[u'name'],
-                    email=me.get(u'email'),  # optional
-                    picture=me[u'picture'],
-                    friends=[user[u'id'] for user in me[u'friends'][u'data']])
-                user.put()
+            if not user:
+            # if not user and facebook.access_token:
+                try:
+                    me = facebook.api(u'/me', {u'fields': u'picture,friends'})
+                    user = UserModel(key_name=facebook.user_id,
+                        user_id=facebook.user_id,
+                        access_token=facebook.access_token,
+                        name=me[u'name'],
+                        email=me.get(u'email'),  # optional
+                        picture=me[u'picture'],
+                        friends=[user[u'id'] for user in me[u'friends'][u'data']])
+                    user.put()
+                except FacebookApiError as e:
+                    logging.error("Error calling facebook" + str(e))
+
+            else:
+                 raise Exception("no access token")
+        else:
+            logging.error("no user_id")
 
         self.facebook = facebook
         self.user = user
@@ -154,5 +173,5 @@ class BaseHandler(webapp.RequestHandler):
             self.set_message()  # clear the current cookie
             return json.loads(base64.b64decode(message))
 
-	def cookie_name(self):
-		return 'fbsr_%s' % facebook_conf.FACEBOOK_APP_ID
+    def cookie_name(self):
+        return 'fbsr_%s' % facebook_conf.FACEBOOK_APP_ID

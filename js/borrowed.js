@@ -19,8 +19,6 @@ Borrowed.prototype.friendsList = function(id){
 						o.appendChild(t);
 					}
 				}
-				profilePicsDiv.innerHTML = markup;
-				FB.XFBML.parse(profilePicsDiv);
 			});
 		}
 		else{
