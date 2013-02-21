@@ -48,18 +48,18 @@ class UserModel(db.Model):
 		self.dirty = False
 		self.name = me[u'name']
 		self.email = me.get(u'email')
-		self.picture = me[u'picture']
+		self.picture = me[u'picture'][u'url']
 		self.friends = [user[u'id'] for user in me[u'friends'][u'data']]
 		return self.put()
 
 	@staticmethod
 	def from_facebook(facebook, id):
-		me = facebook.api(u'/%s' % id, {u'fields': u'picture'})
+		me = facebook.api(u'/%s' % id, {'fields':'first_name,last_name,email,picture,name'})
 		user = UserModel(key_name=me['id'],
 			user_id=me['id'],
 			name=me[u'name'],
 			email=me.get(u'email'),  # optional
-			picture=me[u'picture'],
+			picture=me[u'picture'][u'data'][u'url'],
 			)
 		return user
 
@@ -82,5 +82,3 @@ class BorrowedModel(db.Model):
 		elif(self.status == self.STATUS_RETURNED):
 			return "Returned"
 		return None
-
-

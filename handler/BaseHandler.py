@@ -154,4 +154,5 @@ class BaseHandler(webapp.RequestHandler):
             self.set_message()  # clear the current cookie
             return json.loads(base64.b64decode(message))
 
-
+	def cookie_name(self):
+		return 'fbsr_%s' % facebook_conf.FACEBOOK_APP_ID
