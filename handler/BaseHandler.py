@@ -10,7 +10,7 @@ import datetime
 import Cookie
 import logging
 from uuid import uuid4
-from django.utils import simplejson as json
+import json
 from conf import facebook_conf
 import urllib
 
