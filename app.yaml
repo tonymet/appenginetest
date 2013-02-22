@@ -8,6 +8,8 @@ threadsafe: no
 libraries:
 - name: django
   version: "1.4"
+- name: webapp2
+  version: latest
 
 env_variables:
   DJANGO_SETTINGS_MODULE: 'conf.django_conf'

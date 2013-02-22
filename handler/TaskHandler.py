@@ -1,5 +1,4 @@
-from google.appengine.ext import webapp
-from google.appengine.ext.webapp import template
+import webapp2
 import logging
 from model.TaskModel import *
 from model.Facebook import *

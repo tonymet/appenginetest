@@ -13,8 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-from google.appengine.ext import webapp
-from google.appengine.ext.webapp import util
+import webapp2
 from model.TaskModel import *
 import logging
 from routes import Routes
@@ -23,9 +22,9 @@ from routes import Routes
 def main():
 	logging.getLogger().setLevel(logging.DEBUG)
 	r = Routes()
-	application = webapp.WSGIApplication(r.routes,
+	application = webapp2.WSGIApplication(r.routes,
 										 debug=True)
-	util.run_wsgi_app(application)
+	application.run()
 
 if __name__ == '__main__':
 	main()

@@ -4,7 +4,7 @@ from google.appengine.api import urlfetch
 from google.appengine.runtime import DeadlineExceededError
 from google.appengine.api.labs import taskqueue
 from model.Facebook import Facebook, FacebookApiError
-from google.appengine.ext.webapp import util, template
+from google.appengine.ext.webapp import template
 from model.TaskModel import UserModel
 import datetime
 import Cookie
@@ -16,9 +16,9 @@ import urllib
 
 
 
-from google.appengine.ext import webapp
+import webapp2
 
-class BaseHandler(webapp.RequestHandler):
+class BaseHandler(webapp2.RequestHandler):
     facebook = None
     user = None
     csrf_protect = True
