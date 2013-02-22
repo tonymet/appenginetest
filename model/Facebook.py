@@ -6,6 +6,7 @@ from django.utils import simplejson as json
 from conf import facebook_conf
 from google.appengine.api import urlfetch
 import urllib
+import urlparse
 import logging
 import pprint
 
@@ -26,7 +27,7 @@ class Facebook(object):
 		self.access_token = None
 		self.signed_request = {}
 
-	def api(self, path, params=None, method=u'GET', domain=u'graph'):
+	def api(self, path, params=None, method=u'GET', domain=u'graph' ):
 		"""Make API calls"""
 		if not params:
 			params = {}
@@ -53,18 +54,8 @@ class Facebook(object):
 		logging.warn(data)
 		expected_sig = hmac.new( self.app_secret, msg=payload, digestmod=hashlib.sha256).digest()
 
-		data = json.loads(
-				self.api('/oauth/access_token', 
-					{
-						'client_id': facebook_conf.FACEBOOK_APP_ID,
-						'client_secret': facebook_conf.FACEBOOK_APP_SECRET,
-						'redirect_uri' : facebook_conf.EXTERNAL_HREF,
-						'code' : data.get('code')
-					}
-				)
-		)
-		logging.warn(data);
-
+		oauth_token = self.auth_token_from_code(data.get('code'))
+		data.set('oauth_token', oauth_token)
 
 		if not data.get(u'oauth_token'):
 			raise Exception("missing oauth_token")
@@ -96,3 +87,25 @@ class Facebook(object):
 	@staticmethod
 	def base64_url_encode(data):
 		return base64.urlsafe_b64encode(data).rstrip('=')
+
+	def auth_token_from_code(self,code):
+		path = '/oauth/access_token'
+		params = {
+			'client_id': facebook_conf.FACEBOOK_APP_ID,
+			'client_secret': facebook_conf.FACEBOOK_APP_SECRET,
+			'redirect_uri' : facebook_conf.EXTERNAL_HREF,
+			'code' : code
+		}
+		result = urlfetch.fetch(
+			url=u'https://' + 'graph' + u'.facebook.com' + path,
+			payload=urllib.urlencode(params),
+			method=urlfetch.POST,
+			headers={
+				u'Content-Type': u'application/x-www-form-urlencoded'})
+		data = urlparse.parse_qs(str(result.content))
+		logging.warn(pprint.pformat(data));
+		self.access_token = data['access_token']
+		return self.access_token
+
+	def get_user_info(self, code):
+		me = facebook.api(u'/me', {u'fields': u'picture,friends'})

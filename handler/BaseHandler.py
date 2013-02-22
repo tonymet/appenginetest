@@ -12,6 +12,7 @@ import logging
 from uuid import uuid4
 from django.utils import simplejson as json
 from conf import facebook_conf
+import urllib
 
 
 
@@ -91,6 +92,13 @@ class BaseHandler(webapp.RequestHandler):
         """Sets up the request specific Facebook and User instance"""
         facebook = Facebook()
         user = None
+        if self.request.get('code') is '':
+            # redirect to facebook
+            logging.warn('redirect to FB')
+            self.redirectToLogin()
+        else:
+            logging.warn('fetching access token')
+            facebook.auth_token_from_code(str(self.request.get('code')))
 
         # initial facebook request comes in as a POST with a signed_request
         if u'signed_request' in self.request.POST:
@@ -175,3 +183,8 @@ class BaseHandler(webapp.RequestHandler):
 
     def cookie_name(self):
         return 'fbsr_%s' % facebook_conf.FACEBOOK_APP_ID
+
+    def redirectToLogin(self):
+        state = 'xxx'
+        dialog_url = "https://www.facebook.com/dialog/oauth?" + urllib.urlencode({'client_id': facebook_conf.FACEBOOK_APP_ID,'redirect_uri': facebook_conf.EXTERNAL_HREF, 'state':state}) ;
+        self.redirect(dialog_url)
