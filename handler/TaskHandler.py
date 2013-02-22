@@ -67,6 +67,9 @@ class BorrowedListHandler(BaseHandler):
 		if not friend:
 			friend = UserModel.from_facebook(self.facebook, self.request.params['friend'])
 			friend.put()
+		if self.user is None:
+			self.render('error', error="no user defined")
+			return
 		if self.request.params['verb'] == 'lent':
 			borrowed = BorrowedModel(borrower=friend, lender=self.user, title=self.request.params['title'])
 		else:

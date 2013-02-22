@@ -111,7 +111,7 @@ class BaseHandler(webapp.RequestHandler):
                 raise Exception(u'ERROR: unable to parse signed request')
         else:
             #pass
-            raise Exception(u'no signed request cookie or POST var')
+            logging.error(u'no signed request cookie or POST var')
 
         # try to load or create a user object
         if facebook.user_id:

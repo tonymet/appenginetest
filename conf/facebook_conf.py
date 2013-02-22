@@ -24,7 +24,7 @@ FACEBOOK_REALTIME_VERIFY_TOKEN = 'RANDOM TOKEN'
 
 # The external URL this application is available at where the Real-time API will
 # send it's pings.
-EXTERNAL_HREF = 'http://tonynet.homeip.net:8080/'
+EXTERNAL_HREF = 'http://tonynet.homeip.net:8081/'
 
 # Facebook User IDs of admins. The poor mans admin system.
 ADMIN_USER_IDS = ['875920334']

@@ -58,7 +58,7 @@ class Facebook(object):
 					{
 						'client_id': facebook_conf.FACEBOOK_APP_ID,
 						'client_secret': facebook_conf.FACEBOOK_APP_SECRET,
-						'redirect_uri' : 'http://tonynet.homeip.net/',
+						'redirect_uri' : facebook_conf.EXTERNAL_HREF,
 						'code' : data.get('code')
 					}
 				)
