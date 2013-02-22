@@ -55,7 +55,8 @@ class Facebook(object):
 		expected_sig = hmac.new( self.app_secret, msg=payload, digestmod=hashlib.sha256).digest()
 
 		oauth_token = self.auth_token_from_code(data.get('code'))
-		data.set('oauth_token', oauth_token)
+		if oauth_token is not None:
+			data['oauth_token'] =  oauth_token
 
 		if not data.get(u'oauth_token'):
 			raise Exception("missing oauth_token")
@@ -93,7 +94,8 @@ class Facebook(object):
 		params = {
 			'client_id': facebook_conf.FACEBOOK_APP_ID,
 			'client_secret': facebook_conf.FACEBOOK_APP_SECRET,
-			'redirect_uri' : facebook_conf.EXTERNAL_HREF,
+			#'redirect_uri' : facebook_conf.EXTERNAL_HREF,
+			'redirect_uri' : '',
 			'code' : code
 		}
 		result = urlfetch.fetch(
@@ -104,7 +106,7 @@ class Facebook(object):
 				u'Content-Type': u'application/x-www-form-urlencoded'})
 		data = urlparse.parse_qs(str(result.content))
 		logging.warn(pprint.pformat(data));
-		self.access_token = data['access_token']
+		self.access_token = data['access_token'][0]
 		return self.access_token
 
 	def get_user_info(self, code):
