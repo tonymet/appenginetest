@@ -51,7 +51,7 @@ class Facebook(object):
 		sig = self.base64_url_decode(sig)
 		data = json.loads(self.base64_url_decode(payload))
 
-		logging.warn(data)
+		logging.debug("signed_request: "  + str(data))
 		expected_sig = hmac.new( self.app_secret, msg=payload, digestmod=hashlib.sha256).digest()
 
 		oauth_token = self.auth_token_from_code(data.get('code'))

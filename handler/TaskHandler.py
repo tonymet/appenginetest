@@ -73,5 +73,6 @@ class BorrowedListHandler(BaseHandler):
 			borrowed = BorrowedModel(borrower=friend, lender=self.user, title=self.request.params['title'])
 		else:
 			borrowed = BorrowedModel(borrower=self.user, lender=friend, title=self.request.params['title'])
+		self.set_message(book = "added");
 		borrowed.put()
 		self.redirect(self.request.path)

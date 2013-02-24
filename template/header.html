@@ -21,3 +21,6 @@
 	  fjs.parentNode.insertBefore(js, fjs);
 	}(document, 'script', 'facebook-jssdk'));</script> 
 <div class="fb-login-button" data-show-faces="true" data-width="200" data-max-rows="1"></div> 
+      {% if message %}
+        <div class="message {{ message.type }}">{{ message.content }}</div>
+      {% endif %}

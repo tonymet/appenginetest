@@ -1,17 +1,6 @@
 {% include "header.html" %}
 <h1>Borrowed Items</h1>
-	<table>
-		<tr><th>Name</th><th>Status</th><th>Borrower</th><th>Lender</th></tr>
-	{% for borrowed in borrowed_items %}
-	<tr>
-		<!-- <td><a href="{{request.path}}/{{borrowed.key}}">{{ borrowed.title}}</a></td> -->
-		<td>{{ borrowed.title}}</td>
-		<td>{{ borrowed.status_message	}} </td>
-		<td>{{ borrowed.borrower.name  }}<img src="{{borrowed.borrower.picture}}"> </td>
-		<td>{{ borrowed.lender.name  }}<img src="{{borrowed.lender.picture}}"> </td>
-	</tr>
-	{% endfor %}
-	</table>
+{% include "partial/borrowed_list_table.html" %}
 	{% include "partial/create.html" %}
 	<a href="{{ url }}">{{ url_linktext }}</a>
   </body>

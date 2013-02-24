@@ -14,6 +14,7 @@ import json
 from conf import facebook_conf
 import urllib
 import webapp2
+import base64
 
 class BaseHandler(webapp2.RequestHandler):
     facebook = None
@@ -90,16 +91,7 @@ class BaseHandler(webapp2.RequestHandler):
         facebook = Facebook()
         user = None
 
-        # initial facebook request comes in as a POST with a signed_request
-        if u'signed_request' in self.request.POST:
-            facebook.load_signed_request(self.request.get('signed_request'))
-            # we reset the method to GET because a request from facebook with a
-            # signed_request uses POST for security reasons, despite it
-            # actually being a GET. in webapp causes loss of request.POST data.
-            self.request.method = u'GET'
-            self.set_cookie(
-                'u', facebook.user_cookie, datetime.timedelta(minutes=1440))
-        elif self.cookie_name() in self.request.cookies:
+        if self.cookie_name() in self.request.cookies:
             try:
                 facebook.load_signed_request(self.request.cookies.get(self.cookie_name()))
             except Exception as e:
@@ -109,7 +101,7 @@ class BaseHandler(webapp2.RequestHandler):
                 raise Exception(u'ERROR: unable to parse signed request')
         else:
             #pass
-            logging.error(u'no signed request cookie or POST var')
+            logging.error(u'no signed request cookie')
 
         # try to load or create a user object
         if facebook.user_id:
