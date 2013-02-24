@@ -96,6 +96,7 @@ class BaseHandler(webapp2.RequestHandler):
                 facebook.load_signed_request(self.request.cookies.get(self.cookie_name()))
             except Exception as e:
                 logging.error(str(e))
+                raise
 
             if facebook.signed_request is None:
                 raise Exception(u'ERROR: unable to parse signed request')
@@ -111,6 +112,7 @@ class BaseHandler(webapp2.RequestHandler):
                 if facebook.access_token and \
                         facebook.access_token != user.access_token:
                     user.access_token = facebook.access_token
+                    user.access_token_expires = facebook.access_token_expires
                     user.put()
                 # refresh data if we failed in doing so after a realtime ping
                 if user.dirty:

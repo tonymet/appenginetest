@@ -25,6 +25,7 @@ class Facebook(object):
 		self.app_secret = app_secret
 		self.user_id = None
 		self.access_token = None
+		self.access_token_expires = None
 		self.signed_request = {}
 
 	def api(self, path, params=None, method=u'GET', domain=u'graph' ):
@@ -59,7 +60,8 @@ class Facebook(object):
 			data['oauth_token'] =  oauth_token
 
 		if not data.get(u'oauth_token'):
-			raise Exception("missing oauth_token")
+			logging.error("missing oauth_token")
+			return
 		# allow the signed_request to function for upto 1 day
 		if sig == expected_sig and data[u'issued_at'] > (time.time() - 86400):
 			self.signed_request = data
@@ -104,10 +106,19 @@ class Facebook(object):
 			method=urlfetch.POST,
 			headers={
 				u'Content-Type': u'application/x-www-form-urlencoded'})
-		data = urlparse.parse_qs(str(result.content))
-		logging.debug(pprint.pformat(data));
-		self.access_token = data['access_token'][0]
-		return self.access_token
+		if(result.status_code != 200):
+			logging.debug("content: "  + result.content)
+			logging.error("Error fetching access_token: " + str(result.status_code))
+			return None
+		else:
+			data = urlparse.parse_qs(str(result.content))
+			if data and 'access_token' in data and 'expires' in data:
+				logging.debug(pprint.pformat(data));
+				self.access_token = data['access_token'][0]
+				self.access_token_expires = int(int(data['expires'][0]) + time.time())
+				return self.access_token
+			else:
+				return none
 
 	def get_user_info(self, code):
 		me = facebook.api(u'/me', {u'fields': u'picture,friends'})

@@ -34,6 +34,7 @@ class CommentModel(db.Model):
 class UserModel(db.Model):
 	user_id = db.StringProperty(required=True)
 	access_token = db.StringProperty()
+	access_token_expires = db.IntegerProperty()
 	name = db.StringProperty(required=True)
 	picture = db.StringProperty(required=True)
 	email = db.StringProperty()
