@@ -105,7 +105,7 @@ class Facebook(object):
 			headers={
 				u'Content-Type': u'application/x-www-form-urlencoded'})
 		data = urlparse.parse_qs(str(result.content))
-		logging.warn(pprint.pformat(data));
+		logging.debug(pprint.pformat(data));
 		self.access_token = data['access_token'][0]
 		return self.access_token
 

@@ -13,9 +13,6 @@ from uuid import uuid4
 import json
 from conf import facebook_conf
 import urllib
-
-
-
 import webapp2
 
 class BaseHandler(webapp2.RequestHandler):
@@ -92,13 +89,6 @@ class BaseHandler(webapp2.RequestHandler):
         """Sets up the request specific Facebook and User instance"""
         facebook = Facebook()
         user = None
-       # if self.request.get('code') is '':
-       #     # redirect to facebook
-       #     logging.warn('redirect to FB')
-       #     self.redirectToLogin()
-       # else:
-       #     logging.warn('fetching access token')
-       #     facebook.auth_token_from_code(str(self.request.get('code')))
 
         # initial facebook request comes in as a POST with a signed_request
         if u'signed_request' in self.request.POST:
